@@ -1,0 +1,36 @@
+/* CSS의 Flexbox에 대해 찾아보기, position(relative, fixed등등)도 보면 좋음. 
+ */
+nav a{
+    text-decoration: none;
+    color:black;
+    margin: 2em;
+}
+nav:first-child{
+    display: flex;   
+    justify-content:center;
+}
+
+nav:nth-child(2){
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+/* id선택자 #  */
+#horizontal-underline{
+    /* 절댓값을 의미 */
+    position: absolute;
+    width: 100;
+    background-color: blue;
+    top: 60px;
+    left: 2px;
+    height: 2px;
+}
+
+#vertical-underline{
+    position: absolute;
+    width: 100;
+    background-color: pink;
+    top: 60px;
+    left: 2px;
+    height: 2px;
+}
