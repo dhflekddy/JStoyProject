@@ -1,79 +1,69 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>끝말잇기</title>
-</head>
-<body>
-<!-- div=공간, span=텍스트 감싸는 용도 -->
-<div><span id="order">1</span>번째 참가자</div>
-<div>제시어:<span id="word"> 단어를 제시해 주세요</span></div>
-<input id="input" type="text">
-<button>입력</button>
-<script>
-  const number=Number(prompt("몇명이 참가해여?"),10);
-  let $input=document.querySelector("input#input");//태그를 선택하는 querySelector
-  let cur=1;
-  let $button=document.querySelector("button");
-  let $word=document.querySelector('#word');
-  let $order=document.querySelector('#order');
-  let givenWord;
-  let newWord;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>끝말잇기</title>
+  </head>
+  <body>
+    <!-- div=공간, span=텍스트 감싸는 용도 -->
+    <div><span id="order">1</span>번째 참가자</div>
+    <div>제시어:<span id="word"> 단어를 제시해 주세요</span></div>
+    <input id="input" type="text" />
+    <button>입력</button>
+    <script>
+      const number = Number(prompt("몇명이 참가해여?"), 10);
+      let $input = document.querySelector("input#input"); //태그를 선택하는 querySelector, 태그를 담고있는 변수라는 의미로 변수 이름에 $를 붙여줌
+      let cur = 1;
+      let $button = document.querySelector("button");
+      let $word = document.querySelector("#word"); //#은 선택자에서 id를 선택하는 의미있는 기호, .은 클래스 빈칸(' ')은 자손태그
+      let $order = document.querySelector("#order");
+      let givenWord;
+      let newWord;
 
+      const onInput = (event) => {
+        newWord = event.target.value;
+        // console.log(newWord);
+      };
 
-  const onInput=(event)=>{
-    newWord=event.target.value;
-    // console.log(newWord);
-  }
+      $input.addEventListener("input", onInput);
 
-  $input.addEventListener('input', onInput);
-  
-  let processWord=(givenWord, newWord)=>{
-    givenWord=newWord;
-    $word.textContent=givenWord;
-    $input.value="";
-    cur=(cur%number)+1;
-    $order.textContent=cur;
-    return [givenWord, newWord];
-  }
-  
-  const onClickButton=()=>{
-    if(!givenWord){//비어있다
-    console.log("비어있다");
-    let arr=processWord(givenWord, newWord);
-    givenWord=arr[0];
-    newWord=arr[1];
-    console.log(givenWord, newWord);
-    }
-    else{//비어있지 않다
-      console.log("비어있지 않다");
-      if(givenWord[givenWord.length-1]==newWord[0]){
-      let arr=processWord(givenWord, newWord);
-      givenWord=arr[0];
-      newWord=arr[1];
-      console.log(givenWord, newWord);
-      }
-      else{
-        alert("올바른 단어를 제시해 주세요");
-      }
-    }
-  }
+      let processWord = (givenWord, newWord) => {
+        givenWord = newWord;
+        //input, textArea, select와 같은 입력태그는 value를 속성으로가진다. 반면 일반 태그는 textContent속성을 갖는다.
+        $word.textContent = givenWord;
+        $input.value = "";
+        $input.focus();
+        cur = (cur % number) + 1;
+        $order.textContent = cur;
+        return [givenWord, newWord];
+      };
 
-  // $button.addEventListener('click', onClickButton)
+      const onClickButton = () => {
+        if (!givenWord) {
+          //비어있다
+          console.log("비어있다");
+          let arr = processWord(givenWord, newWord);
+          givenWord = arr[0];
+          newWord = arr[1];
+          console.log(givenWord, newWord);
+        } else {
+          //비어있지 않다
+          console.log("비어있지 않다");
+          if (givenWord[givenWord.length - 1] == newWord[0]) {
+            let arr = processWord(givenWord, newWord);
+            givenWord = arr[0];
+            newWord = arr[1];
+            console.log(givenWord, newWord);
+          } else {
+            alert("올바른 단어를 제시해 주세요");
+            $input.value = "";
+            $input.focus();
+          }
+        }
+      };
 
-  $button.addEventListener('click',onClickButton);
-
-
-
-  // if(첫번째 참가자){
-  //   newWord=givenWord;
-
-  // }else{
-  //   if()
-
-  // }
-
-</script>
-</body>
+      $button.addEventListener("click", onClickButton);
+    </script>
+  </body>
 </html>
