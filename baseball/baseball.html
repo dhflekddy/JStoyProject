@@ -1,0 +1,99 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>숫자야구</title>
+  </head>
+  <body>
+    <!-- 보통이렇게 form과 input태그가 함께 쓰이면 form태그에 evnet를 추가하여 줌. 그래서 아래 코드에 
+      $form.addEventListener("submit", (event) => { });와 같이 코딩한 것임.
+      사실 form 태그 없이 input만 써도 되긴합니다. 하지만 html의 웹표준을 준수하려고 form안에 input태그를 사용해 준것입니다.
+      버튼(click)과 달리 form태그는 submit이라는 이벤트가 존재합니다. 이렇게 해서 form안에 있는 button을 누르게 되면 submit이 호출되게 됩니다.
+      
+ 
+-->
+    <form id="form">
+      <input type="text" id="input" />
+      <button>확인</button>
+    </form>
+    <div id="logs"></div>
+    <script>
+      $form = document.querySelector("#form");
+      $input = document.querySelector("#input");
+      $log = document.querySelector("#logs");
+
+      const numbers = [];
+      for (let i = 0; i < 9; ++i) {
+        numbers.push(i + 1);
+      }
+
+      let answer = [];
+      for (let i = 0; i < 4; ++i) {
+        const index = Math.floor(Math.random() * numbers.length);
+        answer.push(numbers[index]);
+        numbers.splice(index, 1);
+      }
+      console.log(answer);
+      const tries = [];
+
+      function checkWord(value) {
+        if (value.length != 4) {
+          return alert("길이가 4인 숫자를 입력하여 주세요");
+        } else if (new Set(value).size != 4) {
+          return alert("각기 다른 숫자를 입력하여 주세요");
+        } else if (tries.includes(value)) {
+          return alert(
+            "이전에 입력했던 숫자입니다. 다른 숫자를 입력하여 주세요"
+          );
+        }
+        return true;
+      }
+
+      //numbers, answer
+      $form.addEventListener("submit", (event) => {
+        console.log('서브밋',event);
+        event.preventDefault();
+        const value = $input.value;
+        $input.value = "";
+        if (!checkWord(value)) {
+          // value가 기본조건을 만족하지 않으면 바로 return
+          return;
+        }
+        if (answer.join("") == value) {//JS의 경우 배열을 문자열로 바꾸는 메서드가 join입니다.
+          //정답의 경우
+          $log.textContent = "홈런입니다!!";
+          return;
+        }
+        if (tries.length >= 9) {
+          //실패의 경우
+          // $log.textContent='패배, 정답은 ${answer.join}'  //이렇게 $log.textContent는 변수를 넣을 수 없어서 아래와 같이 노드를 만들고
+          //그것을 div태그($log)에 붙임.  하지만 굳이 노드를 만들지 않고 달랑 메시지만 인자로 넣어줘도 됨
+          const message = document.createTextNode(
+                        `패배, 정답은 ${answer.join("")} 입니다`
+          );
+          $log.appendChild(message);
+          return;
+        }
+        let strike = 0;
+        let ball = 0; //정답도 실패도 아닌 경우. strike, ball정보를 알려주고 끝낸다.
+        for (let i = 0; i < 4; ++i) {
+          let idx = value.indexOf(answer[i]);
+          if (idx > -1) {
+            if (i == idx) {
+              strike += 1;
+              continue;
+            }
+            ball += 1;
+          }
+        }
+        //
+    
+        $log.appendChild(document.createTextNode(`${value}: ${strike}Strike, ${ball}Ball 입니다`));   
+        $log.appendChild(document.createElement("br"));
+        //위의 두 문장을 아래와 같이 하나의 문장으로 해 줄 수 있음
+        // $log.append(`${value}: ${strike}스트라이크, ${ball}볼 입니다`,document.createElement("br"));
+        tries.push(value);
+        console.log(tries);
+    });
+    </script>
+  </body>
+</html>
