@@ -20,8 +20,18 @@
       $form = document.querySelector("#form");
       $input = document.querySelector("#input");
       $log = document.querySelector("#logs");
-
-      const numbers = [];
+      let out=0;
+      /*
+      JS에서는 아래와 같이 배열의 길이도 주워지지 않은 상태로
+      
+      let arr = [];
+      for (let i = 0; i < 5; i++) {
+        arr[i] = i + 1;
+      }
+      
+      이것이 가능
+      */
+      const numbers = []; 
       for (let i = 0; i < 9; ++i) {
         numbers.push(i + 1);
       }
@@ -50,7 +60,6 @@
 
       //numbers, answer
       $form.addEventListener("submit", (event) => {
-        console.log('서브밋',event);
         event.preventDefault();
         const value = $input.value;
         $input.value = "";
@@ -58,7 +67,8 @@
           // value가 기본조건을 만족하지 않으면 바로 return
           return;
         }
-        if (answer.join("") == value) {//JS의 경우 배열을 문자열로 바꾸는 메서드가 join입니다.
+        if (answer.join("") == value) {
+          //JS의 경우 배열을 문자열로 바꾸는 메서드가 join입니다.
           //정답의 경우
           $log.textContent = "홈런입니다!!";
           return;
@@ -68,32 +78,63 @@
           // $log.textContent='패배, 정답은 ${answer.join}'  //이렇게 $log.textContent는 변수를 넣을 수 없어서 아래와 같이 노드를 만들고
           //그것을 div태그($log)에 붙임.  하지만 굳이 노드를 만들지 않고 달랑 메시지만 인자로 넣어줘도 됨
           const message = document.createTextNode(
-                        `패배, 정답은 ${answer.join("")} 입니다`
+            `패배, 정답은 ${answer.join("")} 입니다`
           );
           $log.appendChild(message);
           return;
         }
+
         let strike = 0;
         let ball = 0; //정답도 실패도 아닌 경우. strike, ball정보를 알려주고 끝낸다.
-        for (let i = 0; i < 4; ++i) {
-          let idx = value.indexOf(answer[i]);
-          if (idx > -1) {
-            if (i == idx) {
+        
+        // for (let i = 0; i < 4; ++i) {
+        //   let idx = value.indexOf(answer[i]);
+        //   if (idx > -1) {
+        //     if (i == idx) {
+        //       strike += 1;
+        //       continue;
+        //     }
+        //     ball += 1;
+        //   }
+        // }
+
+        //위와 같이 하지않고 배열의 forEach함수를 사용하여 아래와 같이 코딩할 수 있다.
+        answer.forEach((number, idx) => {
+          const index = value.indexOf(number);
+          if (index > -1) {
+            if (idx == index) {
               strike += 1;
-              continue;
+            } else {
+              ball += 1;
             }
-            ball += 1;
+          }
+        });
+
+        if(strike===0 && ball===0){
+          out+=1;
+          if(out<3){
+          $log.append(`${value}: You are out!`,document.createElement("br"));
+          }else{
+            $log.textContent="You are 3strike out"
+            return;
           }
         }
-        //
-    
-        $log.appendChild(document.createTextNode(`${value}: ${strike}Strike, ${ball}Ball 입니다`));   
-        $log.appendChild(document.createElement("br"));
+        else{
+        // $log.appendChild(document.createTextNode(`${value}: ${strike}Strike, ${ball}Ball 입니다`));
+        // $log.appendChild(document.createElement("br"));
         //위의 두 문장을 아래와 같이 하나의 문장으로 해 줄 수 있음
-        // $log.append(`${value}: ${strike}스트라이크, ${ball}볼 입니다`,document.createElement("br"));
+        $log.append(
+          `${value}: ${strike}스트라이크, ${ball}볼 입니다`,
+          document.createElement("br")
+        );
+        }
+
+
+        //appendChild보다 append를 사용하면된다! append는 인자를 여러개 넣을 수도 있고 문자열을 위와 같이 직접 넣어도된다.
+        //그리고 append가 appendChild를 보완해서 나온 함수다.
         tries.push(value);
         console.log(tries);
-    });
+      });
     </script>
   </body>
 </html>
