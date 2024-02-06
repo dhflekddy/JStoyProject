@@ -9,11 +9,11 @@
     <!-- div=공간, span=텍스트 감싸는 용도 -->
     <div><span id="order">1</span>번째 참가자</div>
     <div>제시어:<span id="word"> 단어를 제시해 주세요</span></div>
-    <input id="input" type="text" />
+    <input id ="input11" type="text" />
     <button>입력</button>
     <script>
       const number = Number(prompt("몇명이 참가해여?"), 10);
-      let $input = document.querySelector("input#input"); //태그를 선택하는 querySelector, 태그를 담고있는 변수라는 의미로 변수 이름에 $를 붙여줌
+      let $input = document.querySelector("input#input11"); //태그를 선택하는 querySelector, 태그를 담고있는 변수라는 의미로 변수 이름에 $를 붙여줌
       let cur = 1;
       let $button = document.querySelector("button");
       let $word = document.querySelector("#word"); //#은 선택자에서 id를 선택하는 의미있는 기호, .은 클래스 빈칸(' ')은 자손태그
@@ -23,7 +23,7 @@
 
       const onInput = (event) => {
         newWord = event.target.value;
-        // console.log(newWord);
+        // console.log("입력된단어:"+newWord);
       };
 
       $input.addEventListener("input", onInput);

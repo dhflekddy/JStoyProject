@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8">
+<title>로또추첨기</title>
+<style>
+  
+
+  
+.ball {
+  display: inline-block; 
+  border: 1px solid black; 
+  border-radius: 20px; 
+  width: 40px;
+  height: 40px;
+  line-height: 40px; 
+  font-size: 20px; 
+  text-align: center; 
+  margin-right: 20px;
+}
+</style>
+</head>
+<body>
+<form id="form">
+  <!-- 선택자로 name을 쓰고 있는 input태그 -->
+  <input name="input22" placeholder="숫자 6개를 쉼표로 구분해 입력하세요." />
+  <button>추첨</button>
+</form>
+<div id="result">당첨 숫자: </div>
+<div id="bonus">보너스 숫자: </div>
+<script>
+const $form = document.querySelector('#form');
+const $result = document.querySelector('#result');
+const $bonus = document.querySelector('#bonus');
+function colorize(number, $tag) {
+  if (number < 10) {
+    $tag.style.backgroundColor = 'red';
+    $tag.style.color = 'white';
+  } else if (number < 20) {
+    $tag.style.backgroundColor = 'orange';
+  } else if (number < 30) {
+    $tag.style.backgroundColor = 'yellow';
+  } else if (number < 40) {
+    $tag.style.backgroundColor = 'blue';
+    $tag.style.color = 'white';
+  } else {
+   $tag.style.backgroundColor = 'green';
+    $tag.style.color = 'white';
+  }
+}
+function drawBall(number, $parent) {
+  const $ball = document.createElement('div');
+  $ball.className = 'ball';
+  colorize(number, $ball);
+  $ball.textContent = number;
+  $parent.appendChild($ball);
+}
+const setTimeoutPromise = (ms) => new Promise((resolve, reject) => {
+  setTimeout(resolve, ms);
+});
+let clickable = true;
+$form.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  if (!clickable) {
+    return;
+  }
+  clickable = false; // 클릭 제한
+  $result.innerHTML = '당첨 숫자: ';
+  $bonus.innerHTML = '보너스 숫자: ';
+  /*event.target이 가리키는 것은 form태그이다. 그리고 event.target.input22가 가리키는 것은 input태그이다. 위에서 보는 바와 같이 input태그
+  에는 id를 선택자로 쓰지않고 name을 선택자로 쓰고 있다. 이렇게 name을 선택자로 쓰고 있는 상태에서 input의 내용에 접근하려면 아래와같이 
+  form태그를 가리키는 event.target에 접근 후 input태그에 접근하기 위하여 그 태그에 붙은 이름(input22)을 사용하여 접근후 value를 붙여준다.
+  그렇다면 만약 input태그가 name을 선택자로 쓰지 않고 id를 선택자로 쓴다면 어떻게 될까? 그래도 똑같이 input태그에 붙은 id의 이름을 통해
+  접근해야만 한다. 여기서 한번쯤 신경써 둘 것이 wordRelay프로젝트에서는 input태그를 쓰고 form태그를 쓰지는 않았다. 즉 input까지 접근하는데 다른 
+  어떤 태그를 통하지 않아도 됐던 것이다. 그런상황에서는 input태그에 id를 부여했지만 그 아이디에 대한 언급없이 접근할때는 그냥 event.target.value
+  로 접근할 수 있었다. 즉, 정리해 보면 input태그위에 input을 감싸는 상위태그가 있다면 반드시 input태그의 id혹은 name의 이름을 통해 접근해야 한다는 
+  것이다. 만약 input을 감싸는 상위태그가 없다면 input의 id혹은 name을 따로 써주지 않아도 된다.
+  */
+  const string = event.target.input22.value;
+  if (!string.trim()) {
+    return alert('숫자를 입력하세요.');
+  }
+  const myNumbers = string.split(',').map((v) => parseInt(v.trim()));
+  if (myNumbers.length !== 6) {
+    return alert('6개의 숫자를 입력하세요.');
+  }
+  if (new Set(myNumbers).size !== 6) {
+    return alert('중복되지 않게 입력하세요.');
+  }
+  if (myNumbers.find((v) => v > 45 || v < 1)) {
+    return alert('1부터 45까지만 입력할 수 있습니다');
+  }
+  const candidate = Array(45).fill().map((v, i) => i + 1);
+  const shuffle = [];
+  while (candidate.length > 0) {
+    const random = Math.floor(Math.random() * candidate.length); // 무작위 인덱스 뽑기 
+    const spliceArray = candidate.splice(random, 1); // 뽑은 값은 배열에 들어 있음 
+    const value = spliceArray[0]; // 배열에 들어 있는 값을 꺼내어 
+    shuffle.push(value); // shuffle 배열에 넣기
+  }
+  console.log(shuffle);
+  const winBalls = shuffle.slice(0, 6).sort((a, b) => a - b);
+  const bonus = shuffle[6];
+  console.log(winBalls, bonus);
+
+  for (let i = 0; i < winBalls.length; i++) {
+    await setTimeoutPromise(1000);
+    console.log(winBalls[i], i);
+    drawBall(winBalls[i], $result);
+  }
+  await setTimeoutPromise(1000);
+  drawBall(bonus, $bonus);
+  await setTimeoutPromise(0);
+  let count = 0;
+  myNumbers.forEach((my) => {
+    if (winBalls.includes(my)) {
+      count++;
+    }
+  });
+  if (count === 6) {
+    alert('1등!! 현실 로또 당첨될 운을 여기에 쓰시다니...');
+  } else if (count === 5) {
+    if (myNumbers.includes(bonus)) {
+      alert('2등!! 보너스 공이지만 6개 맞추셨네요.');
+    } else {
+      alert('3등!! 아쉽습니다... 그래도 축하드려요!')
+    }
+  } else if (count === 4) {
+    alert('4등!! 5만원 축하드려요!');
+  } else if (count === 3) {
+    alert('5등!! 5천원 축하드려요!');
+  } else {
+    alert('로또 참 어렵죠?');
+  }
+  clickable = true;
+});
+</script>
+</body>
