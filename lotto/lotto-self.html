@@ -3,12 +3,9 @@
 <meta charset="utf-8">
 <title>로또추첨기</title>
 <style>
-  
-
-  
 .ball {
   display: inline-block; 
-  border: 1px solid black; 
+  border: 1px solid white; 
   border-radius: 20px; 
   width: 40px;
   height: 40px;
@@ -19,6 +16,7 @@
 }
 </style>
 </head>
+
 <body>
 <form id="form">
   <!-- 선택자로 name을 쓰고 있는 input태그 -->
@@ -31,6 +29,7 @@
 const $form = document.querySelector('#form');
 const $result = document.querySelector('#result');
 const $bonus = document.querySelector('#bonus');
+
 function colorize(number, $tag) {
   if (number < 10) {
     $tag.style.backgroundColor = 'red';
@@ -54,18 +53,22 @@ function drawBall(number, $parent) {
   $ball.textContent = number;
   $parent.appendChild($ball);
 }
+
 const setTimeoutPromise = (ms) => new Promise((resolve, reject) => {
   setTimeout(resolve, ms);
 });
+
 let clickable = true;
+
 $form.addEventListener('submit', async (event) => {
   event.preventDefault();
   if (!clickable) {
     return;
   }
   clickable = false; // 클릭 제한
-  $result.innerHTML = '당첨 숫자: ';
-  $bonus.innerHTML = '보너스 숫자: ';
+  // $result.innerHTML = '당첨 숫자: ';//이거 왜있는거지?
+  // $bonus.innerHTML = '보너스 숫자: ';
+
   /*event.target이 가리키는 것은 form태그이다. 그리고 event.target.input22가 가리키는 것은 input태그이다. 위에서 보는 바와 같이 input태그
   에는 id를 선택자로 쓰지않고 name을 선택자로 쓰고 있다. 이렇게 name을 선택자로 쓰고 있는 상태에서 input의 내용에 접근하려면 아래와같이 
   form태그를 가리키는 event.target에 접근 후 input태그에 접근하기 위하여 그 태그에 붙은 이름(input22)을 사용하여 접근후 value를 붙여준다.
@@ -75,6 +78,8 @@ $form.addEventListener('submit', async (event) => {
   로 접근할 수 있었다. 즉, 정리해 보면 input태그위에 input을 감싸는 상위태그가 있다면 반드시 input태그의 id혹은 name의 이름을 통해 접근해야 한다는 
   것이다. 만약 input을 감싸는 상위태그가 없다면 input의 id혹은 name을 따로 써주지 않아도 된다.
   */
+
+  
   const string = event.target.input22.value;
   if (!string.trim()) {
     return alert('숫자를 입력하세요.');
@@ -89,6 +94,7 @@ $form.addEventListener('submit', async (event) => {
   if (myNumbers.find((v) => v > 45 || v < 1)) {
     return alert('1부터 45까지만 입력할 수 있습니다');
   }
+  //아래는 피셔-에이츠 셔플 알고리즘(이름만 화려함)으로 
   const candidate = Array(45).fill().map((v, i) => i + 1);
   const shuffle = [];
   while (candidate.length > 0) {
@@ -110,12 +116,22 @@ $form.addEventListener('submit', async (event) => {
   await setTimeoutPromise(1000);
   drawBall(bonus, $bonus);
   await setTimeoutPromise(0);
+  /*왜 위와 같은 await setTimeoutPromise(0)코드를 쓰나? 그리는 동작보다
+  alert창이 먼저 뜨는 것을 방지하기 위해서. setTimeoutPromise(0)은
+  0초 라고는 해도 실제로는 4ms 정도의 시간을 소비하는 비동기 함수이다.
+  거기에 await를 추가로 붙여주었으므로 반드시 setTimeoutPromise(0)이
+  지난후에야 다음스텝으로 넘어갈 수 있다. 
+  */
+
+
   let count = 0;
+
   myNumbers.forEach((my) => {
     if (winBalls.includes(my)) {
       count++;
     }
   });
+
   if (count === 6) {
     alert('1등!! 현실 로또 당첨될 운을 여기에 쓰시다니...');
   } else if (count === 5) {
@@ -129,9 +145,11 @@ $form.addEventListener('submit', async (event) => {
   } else if (count === 3) {
     alert('5등!! 5천원 축하드려요!');
   } else {
-    alert('로또 참 어렵죠?');
+    alert('로또 참 어렵죠?'); 
   }
   clickable = true;
+  $result.textContent="당첨 숫자: ";
+  $bonus.textContent="보너스 숫자: ";
 });
 </script>
 </body>
