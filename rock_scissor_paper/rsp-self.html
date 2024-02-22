@@ -1,0 +1,123 @@
+<!-- 이 프로젝트를 통해 객체, 타이머의 사용방법을 익힌다  -->
+<!-- setTimeout같은 경우 정해져 놓은 시간이 지나면 해당 행위를 하는 것이지만 setInterval같은 경우 정해진 시각마다 정해진 행동을 반복적으로 하는 것이다 -->
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>가위바위보</title>
+  <style>
+    /* width: 142px; height: 202px */
+    #computer {
+      width: 142px;
+      height: 202px;
+    }
+    
+  </style>
+</head>
+
+<body>
+<div id="computer"></div>
+<div>
+  <button id="scissors" class="btn">가위</button>
+  <button id="rock" class="btn">바위</button>
+  <button id="paper" class="btn">보</button>
+</div>
+<div id="score">0</div>
+
+<script>
+  const $computer = document.querySelector('#computer');
+  const $score = document.querySelector('#score');
+  const $rock = document.querySelector('#rock');
+  const $scissors = document.querySelector('#scissors');
+  const $paper = document.querySelector('#paper');
+
+  const IMG_URL = './rsp.png';// ./ =>파일이 위치한 포더 ../ => 파일이 위치한 폴더보다 한단계 위의 폴더
+  //한편 . 안찍고 그냥 /로 하면 루트 폴더임. Window같은 경우 C드라이브. 보통 서버구현에서 많이 쓰임
+  //점이 없으면 절대 경로, 점이 있으면 상대 경로임. 왜? C드라이브라는 절대적 위치부터 시작하기 때문에 
+
+  $computer.style.background = `url(${IMG_URL}) 0 0`;//js에서 객체의 사용법
+    $computer.style.backgroundSize = 'auto 200px';//auto 200px
+
+//Js에서 객체를 사용하는 이유중에 하나는 변수를 그룹화 해주기 위함도 있다(마치 배열의 역할을 하는 것임)
+  const rspX = {
+    scissors: '0', // 가위
+    rock: '-220px', // 바위220
+    paper: '-440px', // 보440
+  };
+
+  let computerChoice = 'scissors';
+
+  const changeComputerHand = () => {
+    if (computerChoice === 'rock') { // 바위면
+      computerChoice = 'scissors';
+    } else if (computerChoice === 'scissors') { // 가위면
+      computerChoice = 'paper';
+    } else if (computerChoice === 'paper') { // 보면
+      computerChoice = 'rock';
+    }
+    $computer.style.background = `url(${IMG_URL}) ${rspX[computerChoice]} 0`;//js에서 객체의 사용법
+    $computer.style.backgroundSize = 'auto 200px';//auto 200px
+  }
+
+
+  let intervalId = setInterval(changeComputerHand, 300);//50
+
+
+  const scoreTable = {//js의 객체
+    rock: 0,
+    scissors: 1,
+    paper: -1,
+  };
+
+  // clickButton 5번 호출, 인터벌 1번, 2번, 3번, 4번, 5번(얘만 intervalId)
+  //  그 다음에 버튼을 클릭하면 5번만 취소
+  let clickable = true;
+  let computer = 0;
+  let me = 0;
+
+  const clickButton = (event) => {
+    if (clickable) {
+      clearInterval(intervalId);
+      clickable = false;
+      // 점수 계산 및 화면 표시
+      const myChoice = event.target.textContent === '바위' 
+        ? 'rock' 
+        : event.target.textContent === '가위' 
+          ? 'scissors' 
+          : 'paper';
+      const myScore = scoreTable[myChoice];
+      const computerScore = scoreTable[computerChoice];
+      const diff = myScore - computerScore;
+
+
+      let message;
+      // 2, -1은 승리조건이고, -2, 1은 패배조건, 점수표 참고
+      if ([2, -1].includes(diff)) {
+        me += 1;
+        message = '승리';
+      } else if ([-2, 1].includes(diff)) {
+        computer += 1;
+        message = '패배';
+      } else {
+        message = '무승부';
+      }
+      if (me === 3) {
+        $score.textContent = `나의 승리 ${me}:${computer}`;
+      } else if (computer === 3) {
+        $score.textContent = `컴퓨터의 승리 ${me}:${computer}`;
+      } else {
+        $score.textContent = `${message} ${me}:${computer}`;
+        setTimeout(() => {
+          clickable = true;
+          intervalId = setInterval(changeComputerHand, 300);
+        }, 1000);
+      }
+
+    }
+  }; 
+
+  $rock.addEventListener('click', clickButton);
+  $scissors.addEventListener('click', clickButton);
+  $paper.addEventListener('click', clickButton);
+</script>
+</body>
+</html>
