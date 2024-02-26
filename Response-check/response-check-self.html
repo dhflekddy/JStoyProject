@@ -1,0 +1,86 @@
+<!-- 제로초 Javascript 19page -->
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>반응속도</title>
+<style>
+  #screen {
+    width: 300px;
+    height: 200px;
+    text-align: center;
+    user-select: none;
+  }
+  #screen.waiting {
+    background-color: aqua;
+  }
+  #screen.ready {
+    background-color: red;
+    color: white;
+  }
+  #screen.now {
+    background-color: greenyellow;
+  }
+</style>
+</head>
+
+<body>
+<div id="screen" class="waiting">클릭해서 시작하세요</div>
+<div id="result"></div>
+<script>
+  const $screen = document.querySelector('#screen');
+  const $result = document.querySelector('#result');
+ 
+  let startTime;
+  let endTime;
+  const records = [];
+  let timeoutId;
+  $screen.addEventListener('click', (event)=>{
+    event.target//$screen을 의미함
+  });
+  
+  $screen.addEventListener('click', function () {
+    if ($screen.classList.contains('waiting')) { // 파랑
+      $screen.classList.remove('waiting');
+      $screen.classList.add('ready');//css와 연계되어 화면의 색을 바꾸는 역할을 함
+      $screen.textContent = '초록색이 되면 클릭하세요';
+      timeoutId = setTimeout(function () {
+        startTime = new Date();
+        $screen.classList.remove('ready');
+        $screen.classList.add('now');
+        $screen.textContent = '클릭하세요!';
+        //파란색 배경의 너무 성급하시군요 하고 바로 초록색으로 변함
+      }, Math.floor(Math.random() * 1000) + 2000); // 2초에서 3초 사이 2000~3000 사이 수
+    } else if ($screen.classList.contains('ready')) { // 빨강
+      /*
+      여기서 Timeout을 clear해주지 않으면 빨강색배경에서 파란색으로 넘어가고 
+      위에서 실행되기로 예정되어 있던 setTimeout이 실행되는 것임. 그래서 파랑화면에서바로 초록 화면으로 넘어감.
+      실제 JS프로그래밍에서 비동기 함수를 제때 제거해 주지 않아서 많은 문제 발생합니다. 
+      */
+      clearTimeout(timeoutId);
+      $screen.classList.remove('ready');
+      $screen.classList.add('waiting');
+      $screen.textContent = '너무 성급하시군요!';
+    } else if ($screen.classList.contains('now')) { // 초록
+      endTime = new Date();
+      const current = endTime - startTime;
+      records.push(current);
+      const average = records.reduce((a, c) => a + c) / records.length;
+      $result.textContent = `현재 ${current}ms, 평균: ${average}ms`;
+      const topFive = records.sort((p, c) => p - c).slice(0, 5);
+      topFive.forEach((top, index) => {
+        $result.append(
+          document.createElement('br'),
+          `${index + 1}위: ${top}ms`,
+        );
+      });
+      startTime = null;
+      endTime = null;
+      $screen.classList.remove('now');
+      $screen.classList.add('waiting');
+      $screen.textContent = '클릭해서 시작하세요';
+    }
+  });
+</script>
+</body>
+</html>

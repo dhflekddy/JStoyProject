@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset=utf-8>
+<tittle></title>
+    <style>
+        #screen{
+            width: 300px;
+            height: 200px;
+            text-align: center;
+            user-select: none;
+        }
+        #screen.waiting{
+            background-color: aqua;
+        }
+        #screen.ready{
+            background-color: red;
+            color: white;
+        }
+        #screen.now{
+            background-color: greenyellow;
+        }
+    </style>
+</head>
+<body>
+    <div id="screen" class="waiting">Click to start!!!</div>
+    <div id="result"></div>
+    <script>
+        const $screen=document.querySelector('#screen');
+        const $result=document.querySelector('#result');
+        
+        let startTime;
+        let endTime;
+        const records=[];
+        let timeoutId;
+      
+        
+        $screen.addEventListener('click', ()=>{
+            if($screen.classList.contains("waiting")){
+                $screen.classList.remove("waiting");
+                $screen.classList.add("ready");
+                $screen.textContent="click it right after it toured out to Green~!";
+                timeoutId=setTimeout(() => {
+                    $screen.classList.remove("ready");
+                    $screen.classList.add("now");
+                    startTime=new Date();
+                    $screen.textContent="Click now!!!"
+                }, 2000);
+            }else if($screen.classList.contains("ready")){
+                clearTimeout(timeoutId);
+                $screen.classList.remove("ready");
+                $screen.classList.add("waiting");
+                $screen.textContent="Don't rush man~Easy~~~";
+            }else if($screen.classList.contains("now")){
+                endTime=new Date();
+                let record=endTime-startTime;
+                $screen.classList.remove("now");
+                $screen.classList.add("waiting");
+                $screen.textContent="Click to resume"
+                records.push(record);
+                let average=records.reduce((accu, ele)=>accu+ele)/records.length;
+                $result.textContent=`My record: ${record}, Average: ${average}ms`
+                let topFive=records.sort((a,b)=>a-b).slice(0,5);
+                topFive.forEach((ele, idx)=>$result.append(document.createElement('br'), `${idx+1}위: ${ele}ms`));
+                startTime=null;
+                endTime=null;
+            }
+        });
+
+    </script>
+</body>
+</html>
